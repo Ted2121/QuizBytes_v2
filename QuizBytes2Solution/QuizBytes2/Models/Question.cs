@@ -4,15 +4,16 @@ namespace QuizBytes2.Models;
 
 public class Question
 {
+    [Key]
     public string? Id { get; set; }
     [Required]
     public string Text { get; set; }
     [Required]
     public string Hint { get; set; }
     [Required]
-    public IEnumerable<string> CorrectAnswers { get; set; }
+    public ICollection<string> CorrectAnswers { get; set; } = new List<string>();
     [Required]
-    public IEnumerable<string> WrongAnswers { get; set; }
+    public ICollection<string> WrongAnswers { get; set; } = new List<string>();
     [Required]
     public string? Subject { get; set; }
     [Required]

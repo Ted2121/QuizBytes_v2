@@ -4,7 +4,7 @@ namespace QuizBytes2.Models;
 
 public class User
 {
-    [Required]
+    [Key]
     public string Id { get; set; }
     [Required]
     public string Username { get; set; }
@@ -12,7 +12,10 @@ public class User
     public string Password { get; set; }
     [Required]
     public string Role { get; set; }
+    [Required]
     public int TotalPoints { get; set; }
+    [Required]
     public int SpendablePoints { get; set; }
+    [Required]
     public LastQuizResult? LastQuizResult { get; set; }
 }

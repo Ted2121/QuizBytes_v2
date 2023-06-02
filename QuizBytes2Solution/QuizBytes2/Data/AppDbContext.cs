@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using QuizBytes2.Models;
 
 namespace QuizBytes2.Data;
@@ -10,7 +11,7 @@ public class AppDbContext : DbContext
 
     }
 
-   
+
     public DbSet<Question> Questions { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<LastQuizResult> LastQuizResults { get; set; }
@@ -20,45 +21,26 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Question>(entity =>
-        {
-            entity.ToContainer("Questions");
-            entity.HasPartitionKey(q => q.Id);
-            entity.Property(q => q.Text).IsRequired();
-            entity.Property(q => q.Hint).IsRequired();
-            entity.Property(q => q.Subject).IsRequired();
-            entity.Property(q => q.Course).IsRequired();
-            entity.Property(q => q.Chapter).IsRequired();
-            entity.Property(q => q.DifficultyLevel).IsRequired();
-            entity.OwnsMany(q => q.CorrectAnswers, answer =>
-            {
-                answer.Property<string>("Value").IsRequired();
-            });
+        modelBuilder.Entity<User>().ToContainer("Users").HasPartitionKey(e => e.Id);
+        modelBuilder.Entity<Question>().ToContainer("Questions").HasPartitionKey(e => e.Id);
 
-            entity.OwnsMany(q => q.WrongAnswers, answer =>
-            {
-                answer.Property<string>("Value").IsRequired();
-            });
-        });
+        modelBuilder.Entity<Question>()
+        .Property(q => q.CorrectAnswers)
+        .HasConversion(
+            answers => JsonConvert.SerializeObject(answers),
+            json => JsonConvert.DeserializeObject<ICollection<string>>(json)
+        )
+        .IsRequired();
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.ToContainer("Users");
-            entity.HasPartitionKey(u => u.Id);
-            entity.Property(u => u.Username).IsRequired();
-            entity.Property(u => u.Password).IsRequired();
-            entity.Property(u => u.Role).IsRequired();
-            entity.Property(u => u.TotalPoints);
-            entity.Property(u => u.SpendablePoints);
+        modelBuilder.Entity<Question>()
+            .Property(q => q.WrongAnswers)
+            .HasConversion(
+                answers => JsonConvert.SerializeObject(answers),
+                json => JsonConvert.DeserializeObject<ICollection<string>>(json)
+            )
+            .IsRequired();
 
-            entity.OwnsOne(u => u.LastQuizResult, quizResult =>
-            {
-                quizResult.Property(qr => qr.Id);
-                quizResult.Property(qr => qr.SubmitTimestamp).IsRequired();
-                quizResult.Property(qr => qr.CorrectAnswers);
-                quizResult.Property(qr => qr.WrongAnswers);
-                quizResult.Property(qr => qr.DifficultyLevel);
-            });
-        });
+        
+
     }
 }

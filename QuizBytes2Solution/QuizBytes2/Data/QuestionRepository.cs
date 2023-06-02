@@ -25,6 +25,8 @@ public class QuestionRepository : IQuestionRepository
 
         try
         {
+            question.Id = Guid.NewGuid().ToString();
+
             await _appDbContext.AddAsync(question);
 
             var saved = await SaveChangesAsync();

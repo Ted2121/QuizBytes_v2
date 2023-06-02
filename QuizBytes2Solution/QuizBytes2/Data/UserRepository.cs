@@ -34,9 +34,13 @@ public class UserRepository : IUserRepository
             // This needs to be done so that password hashing doesn't affect the argument's reference
             var userToInsert = new User
             {
-                Id = user.Id,
+                Id = Guid.NewGuid().ToString(),
                 Username = user.Username,
                 Password = PasswordEncryption.HashPassword(user.Password),
+                Role = user.Role,
+                TotalPoints = user.TotalPoints,
+                SpendablePoints = user.SpendablePoints,
+                LastQuizResult = user.LastQuizResult
             };
 
             await _appDbContext.AddAsync(userToInsert);
@@ -45,7 +49,7 @@ public class UserRepository : IUserRepository
 
             if (saved)
             {
-                return user.Id;
+                return userToInsert.Id;
             }
             else
             {

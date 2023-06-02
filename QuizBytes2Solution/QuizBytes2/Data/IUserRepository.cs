@@ -13,6 +13,6 @@ public interface IUserRepository
     Task<bool> DeleteUserAsync(string id);
     User Login(string username, string password);
     Task<bool> UpdatePasswordAsync(string username, string oldPassword, string newPassword);
-    Task<bool> UpdateLastQuizByUserIdAsync(string id, LastQuizResult lastQuizResult);
+    Task<bool> UpdateUserLastQuizResultAsync(User user, LastQuizResult lastQuizResult);
     Task<LastQuizResult> GetLastQuizByUserIdAsync(string id);
 }

@@ -6,7 +6,7 @@ namespace QuizBytes2.Data;
 public interface IQuestionRepository
 {
     Task<IEnumerable<Question>> GetAllQuestionsAsync();
-    Task<IEnumerable<Question>> GetQuestionByIdAsync();
+    Task<Question> GetQuestionByIdAsync(string id);
     Task<IEnumerable<Question>> GetQuestionsAsync(Expression<Func<Question, bool>> predicate);
     Task<string> CreateQuestionAsync(Question question);
     Task<bool> UpdateQuestionAsync(Question question);

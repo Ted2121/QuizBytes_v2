@@ -49,7 +49,8 @@ public class UserRepository : IUserRepository
 
             if (saved)
             {
-                return userToInsert.Id;
+                user.Id = userToInsert.Id;
+                return user.Id;
             }
             else
             {
@@ -219,6 +220,8 @@ public class UserRepository : IUserRepository
             {
                 throw new NotFoundException($"User with id: {user.Id} not found.");
             }
+
+            lastQuizResult.Id = Guid.NewGuid().ToString();
 
             userToUpdate.LastQuizResult = lastQuizResult;
             userToUpdate.TotalPoints = user.TotalPoints;

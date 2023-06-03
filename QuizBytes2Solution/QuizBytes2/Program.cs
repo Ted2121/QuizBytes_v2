@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using QuizBytes2.Data;
+using QuizBytes2.Service;
 
 namespace QuizBytes2;
 
@@ -24,6 +25,12 @@ public class Program
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+        #endregion
+
+        #region Service Layer DI
+        builder.Services.AddScoped<IQuizGenerator, QuizGenerator>();
+        builder.Services.AddScoped<IQuizResultHandler, QuizResultHandler>();
+
         #endregion
 
         var app = builder.Build();

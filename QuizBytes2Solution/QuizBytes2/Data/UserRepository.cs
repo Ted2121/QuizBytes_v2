@@ -123,15 +123,15 @@ public class UserRepository : IUserRepository
 
             if (user.LastQuizResult == null)
             {
-                throw new NotFoundException($"Last quiz of user with id: {id} not found.");
+                return null;
             }
 
             return user.LastQuizResult;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
 
-            throw;
+            throw new Exception($"Failed getting last quiz of user with id: {id}. Exception was: {ex}");
         }
     }
 

@@ -8,6 +8,7 @@ public class QuizResultProfile : Profile
 {
     public QuizResultProfile()
     {
-        CreateMap<LastQuizResult, QuizResultDto>().ReverseMap();
+        CreateMap<LastQuizResult, QuizResultDto>();
+        CreateMap<QuizSubmitDto, LastQuizResult>();
     }
 }

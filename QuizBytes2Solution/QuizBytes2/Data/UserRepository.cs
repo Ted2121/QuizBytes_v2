@@ -78,7 +78,7 @@ public class UserRepository : IUserRepository
 
             if (user == null)
             {
-                throw new NotFoundException($"User with id: {id} not found.");
+                throw new UserNotFoundException($"User with id: {id} not found.");
             }
 
             _appDbContext.Remove<User>(user);
@@ -118,7 +118,7 @@ public class UserRepository : IUserRepository
 
             if (user == null)
             {
-                throw new NotFoundException($"User with id: {id} not found.");
+                throw new UserNotFoundException($"User with id: {id} not found.");
             }
 
             if (user.LastQuizResult == null)
@@ -148,7 +148,7 @@ public class UserRepository : IUserRepository
 
             if (user == null)
             {
-                throw new NotFoundException($"User with id: {id} not found.");
+                throw new UserNotFoundException($"User with id: {id} not found.");
             }
 
             return user;
@@ -218,7 +218,7 @@ public class UserRepository : IUserRepository
 
             if (userToUpdate == null)
             {
-                throw new NotFoundException($"User with id: {user.Id} not found.");
+                throw new UserNotFoundException($"User with id: {user.Id} not found.");
             }
 
             lastQuizResult.Id = Guid.NewGuid().ToString();
@@ -269,7 +269,7 @@ public class UserRepository : IUserRepository
 
             if (userToUpdate == null)
             {
-                throw new NotFoundException($"User with id: {user.Id} not found.");
+                throw new UserNotFoundException($"User with id: {user.Id} not found.");
             }
 
             userToUpdate.Username = user.Username;

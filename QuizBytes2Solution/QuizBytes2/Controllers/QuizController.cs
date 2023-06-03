@@ -11,13 +11,13 @@ namespace QuizBytes2.Controllers;
 public class QuizController : ControllerBase
 {
     private IUserRepository _userRepository;
-    private QuizGenerator _quizGenerator;
-    private QuizResultHandler _quizResultHandler;
+    private IQuizGenerator _quizGenerator;
+    private IQuizResultHandler _quizResultHandler;
     private IMapper _mapper;
     public QuizController(
-        IUserRepository userRepository, 
-        QuizGenerator quizGenerator, 
-        QuizResultHandler quizResultVerifier, 
+        IUserRepository userRepository,
+        IQuizGenerator quizGenerator,
+        IQuizResultHandler quizResultVerifier,
         IMapper mapper)
     {
         _userRepository = userRepository;
@@ -39,19 +39,42 @@ public class QuizController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> SubmitQuizAsync(QuizSubmitDto quizSubmitDto)
     {
+        // Should always be first line for time accuracy
         var serverTime = DateTime.UtcNow;
-        var isValid = await _quizResultHandler.ValidateQuizAsync(quizSubmitDto, serverTime);
 
-        if (!isValid)
+        if (!ModelState.IsValid)
         {
-            return BadRequest("Invalid quiz");
+            return BadRequest(ModelState);
         }
 
-        var isSubmitted = await _quizResultHandler.SubmitQuizAsync(quizSubmitDto, serverTime);
+        // TODO get id from claim
+        var userId = "";
 
-        if (!isSubmitted)
+        try
         {
-            return BadRequest("Quiz could not be submitted");
+            // The reason for this time validation is so that a user doesn't run a script to cheat by submitting a quiz multiple times
+            var isValid = await _quizResultHandler.ValidateSubmitTimeAsync(userId, quizSubmitDto, serverTime);
+
+            if (!isValid)
+            {
+                return BadRequest("Invalid quiz");
+            }
+
+            var isSubmitted = await _quizResultHandler.SubmitQuizAsync(userId, quizSubmitDto, serverTime);
+
+            if (!isSubmitted)
+            {
+                return BadRequest("Quiz could not be submitted");
+            }
+
+        }
+        catch (UserNotFoundException)
+        {
+            return NotFound("User could not be found");
+        }
+        catch (ResourceNotFoundException)
+        {
+            return NotFound("Quiz could not be found");
         }
 
         return Ok();
@@ -67,21 +90,19 @@ public class QuizController : ControllerBase
         {
             var quizResult = await _userRepository.GetLastQuizByUserIdAsync(userId);
 
-            if (quizResult == null)
-            {
-                return NotFound("A quiz result could not be found");
-            }
-        }
-        catch (NotFoundException)
-        {
 
+
+            var quizResultDto = _mapper.Map<QuizResultDto>(quizResult);
+
+            return Ok(quizResultDto);
+        }
+        catch (UserNotFoundException)
+        {
             return NotFound("User could not be found");
         }
-
-        var quizResultDto = 
-
-        return Ok(QuizResultDto)
-
-
+        catch (ResourceNotFoundException)
+        {
+            return NotFound("Quiz result could not be found");
+        }
     }
 }

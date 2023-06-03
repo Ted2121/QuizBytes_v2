@@ -60,7 +60,7 @@ public class QuestionRepository : IQuestionRepository
 
             if (question == null)
             {
-                throw new NotFoundException($"Question with id: {id} not found.");
+                throw new ResourceNotFoundException($"Question with id: {id} not found.");
             }
 
             _appDbContext.Remove<Question>(question);
@@ -100,7 +100,7 @@ public class QuestionRepository : IQuestionRepository
 
             if (question == null)
             {
-                throw new NotFoundException($"Question with id: {id} not found.");
+                throw new ResourceNotFoundException($"Question with id: {id} not found.");
             }
 
             return question;
@@ -141,7 +141,7 @@ public class QuestionRepository : IQuestionRepository
 
             if (questionToUpdate == null)
             {
-                throw new NotFoundException($"Question with id: {question.Id} not found.");
+                throw new ResourceNotFoundException($"Question with id: {question.Id} not found.");
             }
 
             questionToUpdate.Text = question.Text;

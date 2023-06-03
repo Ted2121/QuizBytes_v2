@@ -1,13 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using QuizBytes2.Data;
-using QuizBytes2.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RepositoryIntegrationTests;
+﻿namespace RepositoryIntegrationTests;
 
 [TestFixture]
 public class UserRepositoryIntegrationTests
@@ -18,10 +9,6 @@ public class UserRepositoryIntegrationTests
     private AppDbContext _appDbContext;
 
     public const string SKIP_TEARDOWN = "SkipTearDown";
-
-    string testConnectionString = "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-    string testDatabaseName = "quizbytestests";
-
 
     [OneTimeSetUp]
     public void OneTimeSetup()
@@ -217,7 +204,7 @@ public class UserRepositoryIntegrationTests
     private void ConfigureDbContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseCosmos(testConnectionString, testDatabaseName)
+            .UseCosmos(Configuration.CONNECTION_STRING, Configuration.DATABASE)
             .Options;
 
         _appDbContext = new AppDbContext(options);

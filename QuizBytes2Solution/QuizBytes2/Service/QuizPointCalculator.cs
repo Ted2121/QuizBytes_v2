@@ -18,12 +18,28 @@ public class QuizPointCalculator : IQuizPointCalculator
         _questionCache = questionCache;
         _mapper = mapper;
     }
-    public async Task<int> CalculatePointsAsync(QuizSubmitDto quizSubmitDto)
+    public async Task<int> CountCorrectAnswersAsync(QuizSubmitDto quizSubmitDto)
     {
         var submittedAnswers = quizSubmitDto.SubmittedAnswers.ToList();
+
+        var questions = await GetListOfQuestions(submittedAnswers);
+
+        var correctAnswers = VerifyAnswers(questions, submittedAnswers);
+
+        return correctAnswers;
+    }
+
+
+    public int CalculatePoints(int correctAnswers, int difficultyLevel)
+    {
+        return correctAnswers * difficultyLevel;
+    }
+
+    private async Task<List<QuestionCachingDto>> GetListOfQuestions(List<UserAnswerDto> submittedAnswers)
+    {
         List<QuestionCachingDto> questions = new List<QuestionCachingDto>();
 
-        foreach(var answer in submittedAnswers)
+        foreach (var answer in submittedAnswers)
         {
             QuestionCachingDto cachedQuestion;
 
@@ -34,13 +50,11 @@ public class QuizPointCalculator : IQuizPointCalculator
                 cachedQuestion = _mapper.Map<QuestionCachingDto>(question);
                 _questionCache.Set(answer.QuestionId, cachedQuestion, TimeSpan.FromMinutes(30));
             }
-           
+
             questions.Add(cachedQuestion);
         }
-
-        // TODO now that we have a list of questions, check if answers are correct and make calculations
+        return questions;
     }
-
 
     private int VerifyAnswers(List<QuestionCachingDto> questions, List<UserAnswerDto> answers)
     {

@@ -6,7 +6,7 @@ using QuizBytes2.Exceptions;
 using QuizBytes2.Service;
 
 namespace QuizBytes2.Controllers;
-[Route("api/v2/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class QuizController : ControllerBase
 {
@@ -80,6 +80,7 @@ public class QuizController : ControllerBase
         return Ok();
     }
 
+    [Route("result")]
     [HttpGet]
     public async Task<ActionResult<QuizResultDto>> GetQuizResult()
     {

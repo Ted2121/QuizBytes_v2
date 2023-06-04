@@ -221,7 +221,7 @@ public class UserRepository : IUserRepository
                 throw new UserNotFoundException($"User with id: {user.Id} not found.");
             }
 
-            lastQuizResult.Id = Guid.NewGuid().ToString();
+            //lastQuizResult.Id = Guid.NewGuid().ToString();
 
             userToUpdate.LastQuizResult = lastQuizResult;
             userToUpdate.TotalPoints = user.TotalPoints;

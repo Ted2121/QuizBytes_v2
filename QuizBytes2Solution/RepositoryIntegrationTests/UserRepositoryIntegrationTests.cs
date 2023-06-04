@@ -214,7 +214,7 @@ public class UserRepositoryIntegrationTests
     {
         _lastQuizResult = new LastQuizResult()
         {
-            SubmitTimestamp = DateTime.UtcNow.ToString(),
+            ClientSubmitTime = DateTime.UtcNow.ToString(),
             CorrectAnswers = 5,
             WrongAnswers = 5,
             DifficultyLevel = 3

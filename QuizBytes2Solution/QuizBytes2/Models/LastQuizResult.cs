@@ -4,8 +4,8 @@ namespace QuizBytes2.Models;
 
 public class LastQuizResult
 {
-    [Required]
-    public string Id { get; set; }
+    //[Required]
+    //public string Id { get; set; }
     [Required]
     public string ClientSubmitTime { get; set; }
     [Required]

@@ -4,5 +4,6 @@ namespace QuizBytes2.Service;
 
 public interface IQuizPointCalculator
 {
-    Task<int> CalculatePointsAsync(QuizSubmitDto quizSubmitDto);
+    int CalculatePoints(int correctAnswers, int difficultyLevel);
+    Task<int> CountCorrectAnswersAsync(QuizSubmitDto quizSubmitDto);
 }

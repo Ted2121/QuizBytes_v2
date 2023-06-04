@@ -18,21 +18,27 @@ public class QuizResultHandler : IQuizResultHandler
         _quizPointCalculator = quizPointCalculator;
         _mapper = mapper;
     }
-    // TODO we map from quizdto to lastquizresult
-    // we update user: await _userRepository.UpdateUserLastQuizResult(user, _lastquizresult)
     public async Task<bool> SubmitQuizAsync(string userId, QuizSubmitDto quizSubmitDto, DateTime serverTime)
     {
+        var correctAnswers = await _quizPointCalculator.CountCorrectAnswersAsync(quizSubmitDto);
+        var wrongAnswers = quizSubmitDto.SubmittedAnswers.Count() - correctAnswers;
+        var pointsToAdd = _quizPointCalculator.CalculatePoints(correctAnswers, quizSubmitDto.DifficultyLevel);
+
         var quiz = _mapper.Map<LastQuizResult>(quizSubmitDto);
+        quiz.ServerSubmitTime = serverTime.ToString();
+        quiz.WrongAnswers = wrongAnswers;
+        quiz.CorrectAnswers = correctAnswers;
 
         try
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
 
-            user.LastQuizResult = quiz;
+            user.SpendablePoints += pointsToAdd;
+            user.TotalPoints += pointsToAdd;
 
-            await _quizPointCalculator.CalculatePointsAsync(quizSubmitDto);
+            var isUpdated = await _userRepository.UpdateUserLastQuizResultAsync(user, quiz);
 
-            var isUpdated = await _userRepository.UpdateUserAsync(user);
+            return isUpdated;
         }
         catch (UserNotFoundException)
         {
@@ -81,6 +87,5 @@ public class QuizResultHandler : IQuizResultHandler
         {
             throw;
         }
-
     }
 }

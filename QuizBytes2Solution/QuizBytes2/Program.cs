@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using QuizBytes2.Data;
 using QuizBytes2.Service;
 
@@ -30,7 +31,15 @@ public class Program
         #region Service Layer DI
         builder.Services.AddScoped<IQuizGenerator, QuizGenerator>();
         builder.Services.AddScoped<IQuizResultHandler, QuizResultHandler>();
+        #endregion
 
+        #region Caching
+        builder.Services.AddSingleton<IMemoryCache>(provider =>
+        {
+            var questionCache = new MemoryCache(new MemoryCacheOptions());
+
+            return questionCache;
+        });
         #endregion
 
         var app = builder.Build();

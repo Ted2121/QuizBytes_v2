@@ -7,5 +7,5 @@ public class UserAnswerDto
     [Required]
     public string QuestionId { get; set; }
     [Required]
-    public string AnswerText { get; set; }
+    public List<string> SelectedOptions { get; set; }
 }

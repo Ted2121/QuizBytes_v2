@@ -4,9 +4,9 @@ using QuizBytes2.Models;
 
 namespace QuizBytes2.Automapper_Profiles;
 
-public class QuizResultProfile : Profile
+public class QuizProfile : Profile
 {
-    public QuizResultProfile()
+    public QuizProfile()
     {
         CreateMap<LastQuizResult, QuizResultDto>();
         CreateMap<QuizSubmitDto, LastQuizResult>();

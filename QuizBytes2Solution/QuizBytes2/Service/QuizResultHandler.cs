@@ -9,14 +9,16 @@ namespace QuizBytes2.Service;
 public class QuizResultHandler : IQuizResultHandler
 {
     private IUserRepository _userRepository;
+    private IQuizPointCalculator _quizPointCalculator;
+
     private IMapper _mapper;
-    public QuizResultHandler(IUserRepository userRepository, IMapper mapper)
+    public QuizResultHandler(IUserRepository userRepository, IMapper mapper, IQuizPointCalculator quizPointCalculator)
     {
         _userRepository = userRepository;
+        _quizPointCalculator = quizPointCalculator;
         _mapper = mapper;
     }
     // TODO we map from quizdto to lastquizresult
-    // we assign the server time property lastquizresult.servertime = servertimefromprop
     // we update user: await _userRepository.UpdateUserLastQuizResult(user, _lastquizresult)
     public async Task<bool> SubmitQuizAsync(string userId, QuizSubmitDto quizSubmitDto, DateTime serverTime)
     {
@@ -24,21 +26,18 @@ public class QuizResultHandler : IQuizResultHandler
 
         try
         {
-        var user = await _userRepository.GetUserByIdAsync(userId);
+            var user = await _userRepository.GetUserByIdAsync(userId);
 
             user.LastQuizResult = quiz;
 
-
+            await _quizPointCalculator.CalculatePointsAsync(quizSubmitDto);
 
             var isUpdated = await _userRepository.UpdateUserAsync(user);
         }
         catch (UserNotFoundException)
         {
-
             throw;
         }
-
-
     }
 
     public async Task<bool> ValidateSubmitTimeAsync(string userId, QuizSubmitDto quizSubmitDto, DateTime serverTime)

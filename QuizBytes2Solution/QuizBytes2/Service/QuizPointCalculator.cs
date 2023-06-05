@@ -10,13 +10,11 @@ public class QuizPointCalculator : IQuizPointCalculator
 {
     private IQuestionRepository _questionRepository;
     private readonly IMemoryCache _questionCache;
-    private IMapper _mapper;
 
-    public QuizPointCalculator(IQuestionRepository questionRepository, IMemoryCache questionCache, IMapper mapper)
+    public QuizPointCalculator(IQuestionRepository questionRepository, IMemoryCache questionCache)
     {
         _questionRepository = questionRepository;
         _questionCache = questionCache;
-        _mapper = mapper;
     }
     public async Task<int> CountCorrectAnswersAsync(QuizSubmitDto quizSubmitDto)
     {
@@ -35,28 +33,27 @@ public class QuizPointCalculator : IQuizPointCalculator
         return correctAnswers * difficultyLevel;
     }
 
-    private async Task<List<QuestionCachingDto>> GetListOfQuestions(List<UserAnswerDto> submittedAnswers)
+    private async Task<List<Question>> GetListOfQuestions(List<UserAnswerDto> submittedAnswers)
     {
-        List<QuestionCachingDto> questions = new List<QuestionCachingDto>();
+        List<Question> questions = new List<Question>();
 
         foreach (var answer in submittedAnswers)
         {
-            QuestionCachingDto cachedQuestion;
+            Question question;
 
             // We try to get the question from the cache before getting it from the database
-            if (!_questionCache.TryGetValue(answer.QuestionId, out cachedQuestion))
+            if (!_questionCache.TryGetValue(answer.QuestionId, out question))
             {
-                var question = await _questionRepository.GetQuestionByIdAsync(answer.QuestionId);
-                cachedQuestion = _mapper.Map<QuestionCachingDto>(question);
-                _questionCache.Set(answer.QuestionId, cachedQuestion, TimeSpan.FromMinutes(30));
+                question = await _questionRepository.GetQuestionByIdAsync(answer.QuestionId);
+                //_questionCache.Set(answer.QuestionId, question, TimeSpan.FromMinutes(45));
             }
 
-            questions.Add(cachedQuestion);
+            questions.Add(question);
         }
         return questions;
     }
 
-    private int VerifyAnswers(List<QuestionCachingDto> questions, List<UserAnswerDto> answers)
+    private int VerifyAnswers(List<Question> questions, List<UserAnswerDto> answers)
     {
         int correctCount = 0;
         int wrongCount = 0;

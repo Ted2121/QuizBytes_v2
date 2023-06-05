@@ -56,7 +56,7 @@ public class QuestionRepository : IQuestionRepository
         try
         {
             var question =
-            await _appDbContext.Questions.FindAsync(id);
+            await _appDbContext.Questions.FirstOrDefaultAsync(q => q.Id == id);
 
             if (question == null)
             {
@@ -96,7 +96,8 @@ public class QuestionRepository : IQuestionRepository
 
         try
         {
-            var question = await _appDbContext.Questions.FindAsync(id);
+            var question = await _appDbContext.Questions.FirstOrDefaultAsync(q => q.Id == id);
+
 
             if (question == null)
             {
@@ -128,6 +129,22 @@ public class QuestionRepository : IQuestionRepository
         return results;
     }
 
+    public async Task<List<Question>> GetRandomQuestionsFromChapterAsync(string chapter, int difficulty, int count)
+    {
+        var randomQuestions = await _appDbContext.Questions
+           .Where(q => q.Chapter == chapter && q.DifficultyLevel == difficulty)
+           .OrderBy(q => Guid.NewGuid())
+           .Take(count)
+           .ToListAsync();
+
+        if (!randomQuestions.Any())
+        {
+            throw new ResourceNotFoundException($"No questions found in chapter: {chapter}");
+        }
+
+        return randomQuestions;
+    }
+
     public async Task<bool> UpdateQuestionAsync(Question question)
     {
         if (question == null)
@@ -137,7 +154,8 @@ public class QuestionRepository : IQuestionRepository
 
         try
         {
-            var questionToUpdate = await _appDbContext.FindAsync<Question>(question.Id);
+            var questionToUpdate = await _appDbContext.Questions.FirstOrDefaultAsync(q => q.Id == question.Id);
+
 
             if (questionToUpdate == null)
             {

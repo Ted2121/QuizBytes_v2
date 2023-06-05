@@ -4,5 +4,5 @@ namespace QuizBytes2.Service;
 
 public interface IQuizGenerator
 {
-    Task<QuizDto> GetQuizAsync(string subject, string course, string chapter, int difficulty);
+    Task<QuizDto> CreateQuizAsync(string chapter, int difficulty, int questionCount);
 }

@@ -28,12 +28,18 @@ public class QuizController : ControllerBase
 
 
     [HttpGet]
-    public async Task<ActionResult<QuizDto>> GetQuizAsync([FromQuery] string subject, [FromQuery] string course, [FromQuery] string chapter, [FromQuery] int difficulty)
+    public async Task<ActionResult<QuizDto>> GetQuizAsync([FromQuery] string chapter, [FromQuery] int difficulty, [FromQuery] int count)
     {
-        // TODO --incomplete
-        var quiz = await _quizGenerator.GetQuizAsync(subject, course, chapter, difficulty);
+        try
+        {
+            var quiz = await _quizGenerator.CreateQuizAsync(chapter, difficulty, count);
 
-        return Ok(quiz);
+            return Ok(quiz);
+        }
+        catch (ResourceNotFoundException)
+        {
+            return NotFound($"No questions found for chapter: {chapter} with difficulty level: {difficulty}");
+        }
     }
 
     [HttpPost]

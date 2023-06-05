@@ -20,7 +20,8 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<User>().ToContainer("Users").HasPartitionKey(e => e.Id);
-        modelBuilder.Entity<Question>().ToContainer("Questions").HasPartitionKey(e => e.Id);
+        modelBuilder.Entity<Question>().ToContainer("Questions").HasPartitionKey(e => e.Chapter)
+            .HasNoDiscriminator();
 
         modelBuilder.Entity<Question>()
         .Property(q => q.CorrectAnswers)

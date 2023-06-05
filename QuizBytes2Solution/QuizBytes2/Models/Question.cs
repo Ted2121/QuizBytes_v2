@@ -4,7 +4,7 @@ namespace QuizBytes2.Models;
 
 public class Question
 {
-    [Key]
+    [Required]
     public string Id { get; set; }
     [Required]
     public string Text { get; set; }

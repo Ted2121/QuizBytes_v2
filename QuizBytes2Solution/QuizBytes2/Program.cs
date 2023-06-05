@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using QuizBytes2.Data;
 using QuizBytes2.Service;
@@ -43,6 +44,13 @@ public class Program
 
             return questionCache;
         });
+
+        //builder.Services.AddDistributedMemoryCache();
+        //builder.Services.AddSingleton<IDistributedCache>(provider =>
+        //{
+        //    var questionCache = provider.GetService<IDistributedCache>();
+        //    return questionCache;
+        //});
         #endregion
 
         var app = builder.Build();

@@ -8,7 +8,8 @@ public class QuestionProfile : Profile
 {
     public QuestionProfile()
     {
-        CreateMap<Question, QuestionCachingDto>().ReverseMap();
+        //CreateMap<Question, QuestionCachingDto>().ReverseMap();
         CreateMap<Question, QuestionDto>().ReverseMap();
+        CreateMap<IEnumerable<Question>, QuestionDto>().ReverseMap();
     }
 }

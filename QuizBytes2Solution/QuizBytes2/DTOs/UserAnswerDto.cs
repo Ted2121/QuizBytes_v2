@@ -2,6 +2,9 @@
 
 namespace QuizBytes2.DTOs;
 
+/// <summary>
+/// This DTO is used internally by the QuizPointCalculator
+/// </summary>
 public class UserAnswerDto
 {
     [Required]

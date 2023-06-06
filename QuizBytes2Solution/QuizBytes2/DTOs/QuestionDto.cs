@@ -2,6 +2,10 @@
 
 namespace QuizBytes2.DTOs;
 
+/// <summary>
+/// This DTO should be used to give the user questions
+/// that do not contain correct/wrong answers and hints
+/// </summary>
 public class QuestionDto
 {
     [Required]

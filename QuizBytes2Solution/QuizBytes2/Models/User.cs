@@ -2,6 +2,7 @@
 
 namespace QuizBytes2.Models;
 
+//TODO validation
 public class User
 {
     [Key]

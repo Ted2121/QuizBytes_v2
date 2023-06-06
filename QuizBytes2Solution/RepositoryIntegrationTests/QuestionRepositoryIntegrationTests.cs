@@ -42,6 +42,59 @@ public class QuestionRepositoryIntegrationTests
         Assert.That(_question.Id, Is.Not.Null);
     }
 
+    [Category(SKIP_TEARDOWN)]
+    [Test]
+    public async Task ShouldReturnAListOfQuestionsWhenGettingRandomQuestions()
+    {
+        Question _question1 = InitializeRandomQuestion();
+        Question _question2 = InitializeRandomQuestion();
+        Question _question3 = InitializeRandomQuestion();
+        Question _question4 = InitializeRandomQuestion();
+
+        try
+        {
+            // Arrange
+            string _chapter = "Chapter 1";
+            int _difficulty = 1;
+            int _questionCount = 3;
+
+
+            await _questionRepository.CreateQuestionAsync(_question1);
+            await _questionRepository.CreateQuestionAsync(_question2);
+            await _questionRepository.CreateQuestionAsync(_question3);
+            await _questionRepository.CreateQuestionAsync(_question4);
+
+            // Act
+            var returnedQuestions = await _questionRepository.GetRandomQuestionsFromChapterAsync(_chapter, _difficulty, _questionCount);
+
+            // Assert
+            Assert.That(returnedQuestions.Any, Is.True);
+
+        }
+        finally
+        {
+            await _questionRepository.DeleteQuestionAsync(_question1.Id);
+            await _questionRepository.DeleteQuestionAsync(_question2.Id);
+            await _questionRepository.DeleteQuestionAsync(_question3.Id);
+            await _questionRepository.DeleteQuestionAsync(_question4.Id);
+
+        }
+    }
+
+    [Test]
+    public async Task ShouldReturnStringWhenGettingHintByQuestionId()
+    {
+        // Arrange
+        await _questionRepository.CreateQuestionAsync(_question);
+
+
+        // Act
+        var hint = await _questionRepository.GetHintForQuestionByIdAsync(_question.Id);
+
+        // Assert
+        Assert.That(hint, Is.Not.Null.Or.Empty);
+    }
+
     [Test]
     public async Task ShouldReturnAnyQuestionWhenGettingAll()
     {
@@ -137,8 +190,8 @@ public class QuestionRepositoryIntegrationTests
         {
             Text = "Test",
             Hint = "TestHint",
-            CorrectAnswers = new List<string> { "test1", "test2"},
-            WrongAnswers = new List<string> { "test3"},
+            CorrectAnswers = new List<string> { "test1", "test2" },
+            WrongAnswers = new List<string> { "test3" },
             Subject = "test subject",
             Course = "test course",
             Chapter = "test chapter",
@@ -146,6 +199,21 @@ public class QuestionRepositoryIntegrationTests
         };
     }
 
+    private Question InitializeRandomQuestion()
+    {
+        return new Question()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Text = "Test",
+            Hint = "test",
+            CorrectAnswers = new List<string>() { "test1", "test2" },
+            WrongAnswers = new List<string>() { "test3", "test4" },
+            Subject = "subject",
+            Course = "course",
+            Chapter = "Chapter 1",
+            DifficultyLevel = 1
+        };
+    }
     private void ConfigureDbContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()

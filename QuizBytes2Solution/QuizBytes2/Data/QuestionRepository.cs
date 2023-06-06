@@ -1,8 +1,6 @@
-﻿using Microsoft.Azure.Cosmos;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QuizBytes2.Exceptions;
 using QuizBytes2.Models;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace QuizBytes2.Data;
@@ -48,7 +46,7 @@ public class QuestionRepository : IQuestionRepository
 
     public async Task<bool> DeleteQuestionAsync(string id)
     {
-        if (id == null)
+        if (String.IsNullOrEmpty(id))
         {
             throw new ArgumentNullException(nameof(id));
         }
@@ -87,9 +85,38 @@ public class QuestionRepository : IQuestionRepository
         }
     }
 
+    public async Task<string> GetHintForQuestionByIdAsync(string id)
+    {
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new ArgumentNullException();
+        }
+
+        try
+        {
+            var hint = await _appDbContext.Questions
+                    .AsNoTracking()
+                    .Where(q => q.Id.Equals(id))
+                    .Select(q => q.Hint)
+                    .FirstOrDefaultAsync();
+
+            if (String.IsNullOrEmpty(hint))
+            {
+                return null;
+            }
+
+            return hint;
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception($"Failed getting hint for question with id: {id}. Exception was: {ex}");
+        }
+    }
+
     public async Task<Question> GetQuestionByIdAsync(string id)
     {
-        if (id == null)
+        if (String.IsNullOrEmpty(id))
         {
             throw new ArgumentNullException();
         }
@@ -117,8 +144,8 @@ public class QuestionRepository : IQuestionRepository
     public async Task<IEnumerable<Question>> GetQuestionsAsync(Expression<Func<Question, bool>> predicate)
     {
         var query = _appDbContext.Questions
-  .Where(predicate)
-  .AsAsyncEnumerable();
+    .Where(predicate)
+    .AsAsyncEnumerable();
 
         List<Question> results = new List<Question>();
         await foreach (var question in query)
@@ -131,16 +158,15 @@ public class QuestionRepository : IQuestionRepository
 
     public async Task<List<Question>> GetRandomQuestionsFromChapterAsync(string chapter, int difficulty, int count)
     {
-        var randomQuestions = await _appDbContext.Questions
-           .Where(q => q.Chapter == chapter && q.DifficultyLevel == difficulty)
-           .OrderBy(q => Guid.NewGuid())
-           .Take(count)
-           .ToListAsync();
+        var questions = await _appDbContext.Questions
+        .Where(q => q.Chapter == chapter && q.DifficultyLevel == difficulty).ToListAsync();
 
-        if (!randomQuestions.Any())
+        if (!questions.Any())
         {
             throw new ResourceNotFoundException($"No questions found in chapter: {chapter}");
         }
+
+        var randomQuestions = questions.OrderBy(q => Guid.NewGuid()).Take(count).ToList();
 
         return randomQuestions;
     }

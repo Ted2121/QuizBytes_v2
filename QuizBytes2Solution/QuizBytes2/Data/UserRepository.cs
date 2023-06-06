@@ -66,7 +66,7 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> DeleteUserAsync(string id)
     {
-        if (id == null)
+        if (String.IsNullOrEmpty(id))
         {
             throw new ArgumentNullException(nameof(id));
         }
@@ -107,37 +107,35 @@ public class UserRepository : IUserRepository
 
     public async Task<LastQuizResult> GetLastQuizByUserIdAsync(string id)
     {
-        if (id == null)
+        if (String.IsNullOrEmpty(id))
         {
             throw new ArgumentNullException();
         }
 
         try
         {
-            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id.Equals(id));
+            var lastQuizResult = await _appDbContext.Users
+                .AsNoTracking()
+                .Where(u => u.Id.Equals(id))
+                .Select(u => u.LastQuizResult)
+                .FirstOrDefaultAsync();
 
-            if (user == null)
-            {
-                throw new UserNotFoundException($"User with id: {id} not found.");
-            }
-
-            if (user.LastQuizResult == null)
+            if (lastQuizResult == null)
             {
                 return null;
             }
 
-            return user.LastQuizResult;
+            return lastQuizResult;
         }
         catch (Exception ex)
         {
-
             throw new Exception($"Failed getting last quiz of user with id: {id}. Exception was: {ex}");
         }
     }
 
     public async Task<User> GetUserByIdAsync(string id)
     {
-        if (id == null)
+        if (String.IsNullOrEmpty(id))
         {
             throw new ArgumentNullException();
         }

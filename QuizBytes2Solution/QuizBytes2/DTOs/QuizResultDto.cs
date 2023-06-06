@@ -2,6 +2,9 @@
 
 namespace QuizBytes2.DTOs;
 
+/// <summary>
+/// This DTO should be used to give the user their result at the end of a quiz
+/// </summary>
 public class QuizResultDto
 {
     [Required]

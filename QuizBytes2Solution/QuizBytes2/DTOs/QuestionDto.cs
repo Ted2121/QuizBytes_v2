@@ -8,8 +8,7 @@ namespace QuizBytes2.DTOs;
 /// </summary>
 public class QuestionDto
 {
-    [Required]
-    public string Id { get; set; }
+    public string? Id { get; set; }
     [Required]
     [StringLength(300, MinimumLength = 10)]
     public string Text { get; set; }

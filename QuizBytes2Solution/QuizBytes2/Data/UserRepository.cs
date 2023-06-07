@@ -37,10 +37,10 @@ public class UserRepository : IUserRepository
                 Id = Guid.NewGuid().ToString(),
                 Username = user.Username,
                 Password = PasswordEncryption.HashPassword(user.Password),
-                Role = user.Role,
-                TotalPoints = user.TotalPoints,
-                SpendablePoints = user.SpendablePoints,
-                LastQuizResult = user.LastQuizResult
+                Role = "user",
+                TotalPoints = 0,
+                SpendablePoints = 0,
+                LastQuizResult = null
             };
 
             await _appDbContext.AddAsync(userToInsert);

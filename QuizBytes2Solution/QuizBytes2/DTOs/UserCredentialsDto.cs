@@ -2,7 +2,7 @@
 
 namespace QuizBytes2.DTOs;
 
-public class UserLoginDto
+public class UserCredentialsDto
 {
     [Required]
     [StringLength(15, MinimumLength = 5)]
@@ -12,4 +12,8 @@ public class UserLoginDto
     [StringLength(15, MinimumLength = 5)]
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$", ErrorMessage = "Password must contain at least 8 characters, including uppercase, lowercase, numeric, and special characters.")]
     public string Password { get; set; }
+    [Required]
+    [StringLength(15, MinimumLength = 5)]
+    [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$", ErrorMessage = "Password must contain at least 8 characters, including uppercase, lowercase, numeric, and special characters.")]
+    public string NewPassword { get; set; }
 }

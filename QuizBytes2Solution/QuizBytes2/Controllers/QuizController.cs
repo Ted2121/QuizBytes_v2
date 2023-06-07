@@ -56,6 +56,11 @@ public class QuizController : ControllerBase
         // TODO get id from claim
         var userId = "";
 
+        if (String.IsNullOrEmpty(userId))
+        {
+            return Forbid("Invalid user id in claim");
+        }
+
         try
         {
             // The reason for this time validation is so that a user doesn't run a script to cheat by submitting a quiz multiple times
@@ -93,11 +98,14 @@ public class QuizController : ControllerBase
         // TODO user id from claim
         var userId = "";
 
+        if (String.IsNullOrEmpty(userId))
+        {
+            return Forbid("Invalid user id in claim");
+        }
+
         try
         {
             var quizResult = await _userRepository.GetLastQuizByUserIdAsync(userId);
-
-
 
             var quizResultDto = _mapper.Map<QuizResultDto>(quizResult);
 

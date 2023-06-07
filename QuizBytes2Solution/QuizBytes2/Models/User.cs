@@ -5,6 +5,8 @@ namespace QuizBytes2.Models;
 public class User
 {
     [Key]
+    [RegularExpression(@"^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$",
+        ErrorMessage = "The Id field must be a valid GUID format.")]
     public string Id { get; set; }
 
     [Required]

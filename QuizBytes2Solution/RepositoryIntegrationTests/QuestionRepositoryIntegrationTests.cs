@@ -19,6 +19,7 @@ public class QuestionRepositoryIntegrationTests
     public void Setup()
     {
         InitializeQuestion();
+        Configuration.ValidateModel(_question);
     }
 
     [TearDown]
@@ -170,7 +171,7 @@ public class QuestionRepositoryIntegrationTests
         await _questionRepository.CreateQuestionAsync(_question);
 
         // Act
-        var questions = await _questionRepository.GetQuestionsAsync(u => u.Text == "Test");
+        var questions = await _questionRepository.GetQuestionsAsync(u => u.Text == "Testloremipsum");
 
         // Assert
         Assert.That(questions.Any, Is.True);
@@ -188,13 +189,14 @@ public class QuestionRepositoryIntegrationTests
     {
         _question = new Question()
         {
-            Text = "Test",
-            Hint = "TestHint",
+            Id = Guid.NewGuid().ToString(),
+            Text = "Testloremipsum",
+            Hint = "TestHintloremipsum",
             CorrectAnswers = new List<string> { "test1", "test2" },
             WrongAnswers = new List<string> { "test3" },
-            Subject = "test subject",
-            Course = "test course",
-            Chapter = "test chapter",
+            Subject = "test subject lorem ipsum",
+            Course = "test course lorem ipsum",
+            Chapter = "test chapter lorem ipsum",
             DifficultyLevel = 1
         };
     }
@@ -221,6 +223,7 @@ public class QuestionRepositoryIntegrationTests
             .Options;
 
         _appDbContext = new AppDbContext(options);
+        _appDbContext.Database.EnsureCreated();
     }
 
     private void InitializeRepository()

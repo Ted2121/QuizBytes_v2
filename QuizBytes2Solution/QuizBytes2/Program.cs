@@ -61,6 +61,13 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        //TODO this is only for local database --create database and containers manually in production to ensure service is set up correctly
+        #region local database creation
+        using var scope = app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        context.Database.EnsureCreated();
+        #endregion
+
         app.UseHttpsRedirection();
 
         app.UseAuthorization();

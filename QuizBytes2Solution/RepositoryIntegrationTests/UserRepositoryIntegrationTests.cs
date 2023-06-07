@@ -1,4 +1,6 @@
-﻿namespace RepositoryIntegrationTests;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RepositoryIntegrationTests;
 
 [TestFixture]
 public class UserRepositoryIntegrationTests
@@ -21,6 +23,11 @@ public class UserRepositoryIntegrationTests
     public void Setup()
     {
         InitializeUser();
+
+
+        Configuration.ValidateModel(_user);
+
+        //ValidateModel(_user);
     }
 
     [TearDown]
@@ -104,7 +111,7 @@ public class UserRepositoryIntegrationTests
         await _userRepository.CreateUserAsync(_user);
 
         // Act
-        var isPasswordUpdated = await _userRepository.UpdatePasswordAsync(_user.Username, _user.Password, "NewPassword");
+        var isPasswordUpdated = await _userRepository.UpdatePasswordAsync(_user.Username, _user.Password, "NewPassword1!");
 
         // Assert
         Assert.That(isPasswordUpdated, Is.True);
@@ -145,7 +152,7 @@ public class UserRepositoryIntegrationTests
         await _userRepository.CreateUserAsync(_user);
 
         // Act
-        var users = await _userRepository.GetUsersAsync(u => u.Username == "Test");
+        var users = await _userRepository.GetUsersAsync(u => u.Username == "Test1");
 
         // Assert
         Assert.That(users.Any, Is.True);
@@ -192,8 +199,8 @@ public class UserRepositoryIntegrationTests
     {
         _user = new User
         {
-            Username = "Test",
-            Password = "password",
+            Username = "Test1",
+            Password = "Password1!",
             Role = "user",
             TotalPoints = 555,
             SpendablePoints = 77,
@@ -208,6 +215,7 @@ public class UserRepositoryIntegrationTests
             .Options;
 
         _appDbContext = new AppDbContext(options);
+        _appDbContext.Database.EnsureCreated();
     }
 
     private void InitializeQuizResult()
@@ -225,5 +233,7 @@ public class UserRepositoryIntegrationTests
     {
         _userRepository = new UserRepository(_appDbContext);
     }
+
+
 
 }

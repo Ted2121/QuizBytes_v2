@@ -4,6 +4,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using QuizBytes2.Data;
 using QuizBytes2.Service;
+using QuizBytes2.Service.Extensions;
+using Serilog;
 
 namespace QuizBytes2;
 
@@ -53,6 +55,11 @@ public class Program
         //});
         #endregion
 
+        #region Logging
+        builder.Host.UseSerilog((ctx, lc) => lc
+            .ReadFrom.Configuration(ctx.Configuration));
+        #endregion
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
@@ -69,6 +76,8 @@ public class Program
         #endregion
 
         app.UseHttpsRedirection();
+
+        app.ConfigureExceptionHandler(app.Logger);
 
         app.UseAuthorization();
 

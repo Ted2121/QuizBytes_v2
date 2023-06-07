@@ -133,7 +133,7 @@ public class UserRepositoryIntegrationTests
 
     [Category(SKIP_TEARDOWN)]
     [Test]
-    public async Task ShouldThrowExceptionWhenNullUserIsInserted()
+    public void ShouldThrowExceptionWhenNullUserIsInserted()
     {
         // Arrange
         _user = null;

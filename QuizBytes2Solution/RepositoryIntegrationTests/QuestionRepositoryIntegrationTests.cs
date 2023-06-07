@@ -152,7 +152,7 @@ public class QuestionRepositoryIntegrationTests
 
     [Category(SKIP_TEARDOWN)]
     [Test]
-    public async Task ShouldThrowExceptionWhenNullQuestionIsInserted()
+    public void ShouldThrowExceptionWhenNullQuestionIsInserted()
     {
         // Arrange
         _question = null;

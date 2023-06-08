@@ -77,7 +77,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
-        app.ConfigureExceptionHandler(app.Logger);
+        //app.ConfigureExceptionHandler(app.Logger);
 
         app.UseAuthorization();
 

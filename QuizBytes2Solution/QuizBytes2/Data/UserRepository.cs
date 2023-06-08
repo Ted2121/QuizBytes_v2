@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Azure.Cosmos;
+using Microsoft.EntityFrameworkCore;
 using QuizBytes2.Encryption;
 using QuizBytes2.Exceptions;
 using QuizBytes2.Models;
 using System.Linq.Expressions;
+using System.Net;
 using User = QuizBytes2.Models.User;
 
 namespace QuizBytes2.Data;
@@ -219,8 +221,6 @@ public class UserRepository : IUserRepository
                 throw new UserNotFoundException($"User with id: {user.Id} not found.");
             }
 
-            //lastQuizResult.Id = Guid.NewGuid().ToString();
-
             userToUpdate.LastQuizResult = lastQuizResult;
             userToUpdate.TotalPoints = user.TotalPoints;
             userToUpdate.SpendablePoints = user.SpendablePoints;
@@ -238,7 +238,6 @@ public class UserRepository : IUserRepository
     {
         try
         {
-
             var loggedUser = Login(username, oldPassword);
             var newPasswordHashed = PasswordEncryption.HashPassword(newPassword);
 
@@ -282,8 +281,88 @@ public class UserRepository : IUserRepository
         }
     }
 
+    public async Task<bool> UpdateUserWithSpentPointsAsync(string id, int pointsToDeduct)
+    {
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
+
+        if (pointsToDeduct < 0)
+        {
+            throw new ArgumentException(nameof(pointsToDeduct));
+        }
+
+        try
+        {
+            var userToUpdate = await _appDbContext.FindAsync<User>(id);
+
+
+            if (userToUpdate == null)
+            {
+                throw new UserNotFoundException($"User with id: {id} not found.");
+            }
+
+            var currentETag = _appDbContext.Entry(userToUpdate).Property("ETag").CurrentValue as string;
+
+            if (userToUpdate.SpendablePoints < pointsToDeduct)
+            {
+                return false;
+            }
+
+            userToUpdate.SpendablePoints -= pointsToDeduct;
+
+            _appDbContext.Entry(userToUpdate).Property("ETag").CurrentValue = Guid.NewGuid().ToString();
+
+            _appDbContext.Update(userToUpdate);
+
+            var savedChanges = await SaveChangesWithConcurrencyControlAsync(currentETag);
+
+            return savedChanges;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed updating user with id: {id}. Exception was: {ex}");
+        }
+    }
+
     private async Task<bool> SaveChangesAsync()
     {
         return await _appDbContext.SaveChangesAsync() >= 0;
+    }
+
+    private async Task<bool> SaveChangesWithConcurrencyControlAsync(string currentETag, int retryCount = 0, int maxRetries = 2)
+    {
+        // used to break out of a possible infinite loop due to recursive call
+        if (retryCount >= maxRetries)
+        {
+            return false;
+        }
+
+        try
+        {
+            return await SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            foreach (var entry in ex.Entries)
+            {
+                if (entry.Entity is User user)
+                {
+                    await entry.ReloadAsync();
+
+                    var newETag = _appDbContext.Entry(user).Property("ETag").CurrentValue as string;
+
+                    if (currentETag != newETag)
+                    {
+                        return false;
+                    }
+
+                    _appDbContext.Entry(user).Property("ETag").CurrentValue = Guid.NewGuid().ToString();
+                }
+            }
+
+            return await SaveChangesWithConcurrencyControlAsync(currentETag, retryCount + 1);
+        }
     }
 }

@@ -8,6 +8,7 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetAllUsersAsync();
     Task<IEnumerable<User>> GetUsersAsync(Expression<Func<User, bool>> predicate);
     Task<User> GetUserByIdAsync(string id);
+    Task<bool> UpdateUserWithSpentPointsAsync(string id, int pointsToDeduct);
     Task<string> CreateUserAsync(User user);
     Task<bool> UpdateUserAsync(User user);
     Task<bool> DeleteUserAsync(string id);

@@ -13,7 +13,7 @@ public class StringLengthListAttribute : ValidationAttribute
         _maxLength = maxLength;
     }
 
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
     {
         var list = value as List<string>;
         if (list != null)

@@ -109,7 +109,6 @@ public class QuestionRepository : IQuestionRepository
         }
         catch (Exception ex)
         {
-
             throw new Exception($"Failed getting hint for question with id: {id}. Exception was: {ex}");
         }
     }

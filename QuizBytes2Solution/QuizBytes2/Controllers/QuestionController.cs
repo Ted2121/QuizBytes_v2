@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizBytes2.Data;
 using QuizBytes2.DTOs;
 using QuizBytes2.Exceptions;
 using QuizBytes2.Models;
+using QuizBytes2.Service;
 using System.Text.RegularExpressions;
 
 namespace QuizBytes2.Controllers;
@@ -16,11 +15,13 @@ namespace QuizBytes2.Controllers;
 public class QuestionController : ControllerBase
 {
     private IQuestionRepository _questionRepository;
+    private IHintHandler _hintHandler;
     private IMapper _mapper;
 
-    public QuestionController(IQuestionRepository questionRepository, IMapper mapper)
+    public QuestionController(IQuestionRepository questionRepository, IHintHandler hintHandler, IMapper mapper)
     {
         _questionRepository = questionRepository;
+        _hintHandler = hintHandler;
         _mapper = mapper;
     }
 
@@ -45,7 +46,7 @@ public class QuestionController : ControllerBase
     {
         try
         {
-        var question = await _questionRepository.GetQuestionByIdAsync(id);
+            var question = await _questionRepository.GetQuestionByIdAsync(id);
 
             return Ok(_mapper.Map<QuestionAdminDto>(question));
 
@@ -109,7 +110,7 @@ public class QuestionController : ControllerBase
 
         try
         {
-            if(!await _questionRepository.UpdateQuestionAsync(_mapper.Map<Question>(questionDto)))
+            if (!await _questionRepository.UpdateQuestionAsync(_mapper.Map<Question>(questionDto)))
             {
                 return BadRequest($"Question with id: {questionDto.Id} could not be updated");
             }
@@ -140,27 +141,45 @@ public class QuestionController : ControllerBase
             return NotFound($"Questions from chapter: {chapter} could not be found");
         }
 
-        return Ok(_mapper.Map<QuestionAdminDto>(questions));
+        return Ok(_mapper.Map<IEnumerable<QuestionAdminDto>>(questions));
     }
 
     [Route("hint/{id}")]
     [HttpGet]
     public async Task<ActionResult<string>> GetHintByQuestionIdAsync(string id)
     {
+        // TODO get user id from claims
+        var userId = "";
+
+        if (String.IsNullOrEmpty(userId))
+        {
+            return Forbid("Invalid user id");
+        }
+
         if (String.IsNullOrEmpty(id))
         {
             return BadRequest("Invalid id");
         }
 
-        var hint = await _questionRepository.GetHintForQuestionByIdAsync(id);
-
-        if (String.IsNullOrEmpty(hint))
+        try
         {
-            return NotFound("Hint could not be found");
+            var hint = await _hintHandler.GetHintForQuestionById(userId, id);
+
+            if (hint == null)
+            {
+                return NotFound($"Hint could not be found");
+            }
+
+            return Ok(hint);
+
         }
-
-        //TODO logic to deduct points
-
-        return Ok(hint);
+        catch (UserNotFoundException)
+        {
+            return NotFound("User could not be found");
+        }
+        catch (ResourceNotFoundException)
+        {
+            return NotFound("Not enough points");
+        }
     }
 }

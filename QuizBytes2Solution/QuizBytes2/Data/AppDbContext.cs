@@ -19,6 +19,15 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<User>().ToContainer("Users").HasPartitionKey(e => e.Id);
+
+        modelBuilder.Entity<User>()
+        .Property(u => u.ETag)
+        .HasConversion(
+            etag => $"\"{etag}\"",
+            etag => etag.Trim('"'))
+        .ToJsonProperty("_etag")
+        .IsETagConcurrency();
+
         modelBuilder.Entity<Question>().ToContainer("Questions").HasPartitionKey(e => e.Chapter)
             .HasNoDiscriminator();
 

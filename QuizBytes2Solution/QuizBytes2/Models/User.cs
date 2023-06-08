@@ -31,4 +31,7 @@ public class User
     public int SpendablePoints { get; set; }
 
     public LastQuizResult? LastQuizResult { get; set; }
+
+    [ConcurrencyCheck]
+    public string ETag { get; set; }
 }

@@ -7,7 +7,7 @@ using QuizBytes2.Exceptions;
 using QuizBytes2.Models;
 
 namespace QuizBytes2.Controllers;
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 //TODO authorization
 [ApiController]
 public class UserController : ControllerBase

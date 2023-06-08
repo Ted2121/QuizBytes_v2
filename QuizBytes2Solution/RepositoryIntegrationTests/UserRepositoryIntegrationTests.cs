@@ -187,6 +187,21 @@ public class UserRepositoryIntegrationTests
         Assert.That(quiz, Is.Not.Null);
     }
 
+    [Test]
+    public async Task ShouldReturnTrueIfPointsAreUpdated()
+    {
+        // Arrange
+        await _userRepository.CreateUserAsync(_user);
+        InitializeQuizResult();
+        await _userRepository.UpdateUserLastQuizResultAsync(_user, _lastQuizResult);
+
+        // Act
+        var isUpdated = await _userRepository.UpdateUserWithSpentPointsAsync(_user.Id, 10);
+
+        // Assert
+        Assert.That(isUpdated, Is.True);
+    }
+
     private static bool CheckForSkipTearDown()
     {
         var categories = TestContext.CurrentContext.Test?.Properties["Category"];

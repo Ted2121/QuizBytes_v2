@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace QuizBytes2.Service;
+namespace QuizBytes2.Service.Models;
 
 public class ErrorDetails
 {

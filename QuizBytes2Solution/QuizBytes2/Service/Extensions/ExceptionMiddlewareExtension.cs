@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using QuizBytes2.Service.Models;
 using System.Net;
 
 namespace QuizBytes2.Service.Extensions;

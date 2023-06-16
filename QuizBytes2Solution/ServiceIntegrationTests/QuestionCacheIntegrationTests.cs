@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
+using QuizBytes2.Automapper_Profiles;
 using QuizBytes2.Data;
 using QuizBytes2.DTOs;
 using QuizBytes2.Models;
@@ -16,7 +17,7 @@ public class QuestionCacheIntegrationTests
     private int _questionCount = 3;
 
     private Mock<IQuestionRepository> _questionRepositoryMock;
-    private Mock<IMapper> _mapperMock;
+    private IMapper _mapper;
 
     private IMemoryCache _questionCache;
 
@@ -60,9 +61,8 @@ public class QuestionCacheIntegrationTests
             Id = "4",
             Text = "test",
             Hint = "test",
-            CorrectAnswers = new List<string>() { "test1", "test2"},
+            CorrectAnswers = new List<string>() { "test1", "test2" },
             WrongAnswers = new List<string>() { "test3", "test4" },
-            Subject = "subject",
             Course = "course",
             Chapter = "chapter",
             DifficultyLevel = 1
@@ -72,7 +72,7 @@ public class QuestionCacheIntegrationTests
 
         // Act
         var correctAnswers = await _quizPointCalculator.CountCorrectAnswersAsync(_quizSubmitDto);
-        
+
         var isQuestionRetrieved = correctAnswers > 0;
         // Assert
         Assert.That(isQuestionRetrieved, Is.True);
@@ -86,27 +86,26 @@ public class QuestionCacheIntegrationTests
         InitializeQuizSubmitDto();
         InitializeMemoryCache();
         InitializeMocks();
+        InitializeMapper();
         InitializeQuizGenerator();
         InitializeQuizPointCalculator();
     }
 
     private void InitializeMocks()
     {
-        InitializeMapperMock();
         InitializeRepositoryMock();
     }
 
-    private void InitializeMapperMock()
+    private void InitializeMapper()
     {
 
-        _mapperMock = new Mock<IMapper>();
-        _mapperMock.Setup(mapper => mapper.Map<List<QuestionDto>>(_questions))
-            .Returns(_questionDtos);
+        var config = new MapperConfiguration(cfg => cfg.AddProfile<QuestionProfile>());
+        _mapper = config.CreateMapper();
     }
 
     private void InitializeQuizGenerator()
     {
-        _quizGenerator = new QuizGenerator(_questionCache, _questionRepositoryMock.Object, _mapperMock.Object);
+        _quizGenerator = new QuizGenerator(_questionCache, _questionRepositoryMock.Object, _mapper);
     }
 
     private void InitializeQuizPointCalculator()
@@ -125,9 +124,42 @@ public class QuestionCacheIntegrationTests
     {
         _questions = new List<Question>
         {
-        new Question { Id = "1", Text = "Question 1" },
-        new Question { Id = "2", Text = "Question 2" },
-        new Question { Id = "3", Text = "Question 3" }
+        new Question {
+            Id = "1",
+            Text = "Question 1",
+            CorrectAnswers = new List<string>()
+            {
+                "answer 1", "answer 2"
+            },
+            WrongAnswers = new List<string>()
+            {
+                "answer 3", "answer 4"
+            }
+        },
+       new Question {
+            Id = "2",
+            Text = "Question 2",
+            CorrectAnswers = new List<string>()
+            {
+                "answer 1", "answer 2"
+            },
+            WrongAnswers = new List<string>()
+            {
+                "answer 3", "answer 4"
+            }
+        },
+       new Question {
+            Id = "3",
+            Text = "Question 3",
+            CorrectAnswers = new List<string>()
+            {
+                "answer 1", "answer 2"
+            },
+            WrongAnswers = new List<string>()
+            {
+                "answer 3", "answer 4"
+            }
+        },
         };
 
     }

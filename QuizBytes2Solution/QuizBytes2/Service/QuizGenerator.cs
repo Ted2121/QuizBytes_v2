@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using QuizBytes2.Data;
 using QuizBytes2.DTOs;
 using QuizBytes2.Exceptions;
+using QuizBytes2.Service.Extensions;
 
 namespace QuizBytes2.Service;
 
@@ -21,7 +22,7 @@ public class QuizGenerator : IQuizGenerator
 
     public async Task<QuizDto> CreateQuizAsync(string chapter, int difficulty, int questionCount)
     {
-        List<QuestionDto> questionDtos;
+        List<QuestionDto> questionDtos = new List<QuestionDto>();
 
         try
         {
@@ -29,10 +30,23 @@ public class QuizGenerator : IQuizGenerator
 
             foreach (var question in questions)
             {
+                // Add questions to cache
                 _questionCache.Set(question.Id, question, TimeSpan.FromMinutes(45));
+
+                var questionDto = _mapper.Map<QuestionDto>(question);
+
+                // we add the correct and wrong answers to the list and we shuffle it
+                var possibleAnswers = question.CorrectAnswers
+                    .Concat(question.WrongAnswers)
+                    .ToList();
+
+                possibleAnswers.Shuffle();
+
+                questionDto.PossibleAnswers = possibleAnswers;
+
+                questionDtos.Add(questionDto);
             }
 
-            questionDtos = _mapper.Map<List<QuestionDto>>(questions);
         }
         catch (ResourceNotFoundException)
         {

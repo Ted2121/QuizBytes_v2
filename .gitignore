@@ -396,3 +396,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/QuizBytes2Solution/QuizBytes2/appsettings.Development.json
+/QuizBytes2Solution/QuizBytes2/firebase-config.json

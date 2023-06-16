@@ -191,7 +191,6 @@ public class QuestionRepository : IQuestionRepository
             questionToUpdate.Hint = question.Hint;
             questionToUpdate.CorrectAnswers = question.CorrectAnswers;
             questionToUpdate.WrongAnswers = question.WrongAnswers;
-            questionToUpdate.Subject = question.Subject;
             questionToUpdate.Course = question.Course;
             questionToUpdate.Chapter = question.Chapter;
             questionToUpdate.DifficultyLevel = question.DifficultyLevel;

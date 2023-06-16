@@ -1,7 +1,12 @@
 
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using QuizBytes2.Authentication;
 using QuizBytes2.Data;
 using QuizBytes2.Service;
 using QuizBytes2.Service.Extensions;
@@ -18,6 +23,13 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        #region Auth
+        builder.Services.AddSingleton(FirebaseApp.Create());
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddScheme<AuthenticationSchemeOptions, FirebaseAuthenticationHandler>(JwtBearerDefaults.AuthenticationScheme, (o) => { });
+        #endregion
 
         #region Data DI
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

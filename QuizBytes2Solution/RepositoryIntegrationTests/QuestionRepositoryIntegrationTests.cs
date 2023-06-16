@@ -194,7 +194,6 @@ public class QuestionRepositoryIntegrationTests
             Hint = "TestHintloremipsum",
             CorrectAnswers = new List<string> { "test1", "test2" },
             WrongAnswers = new List<string> { "test3" },
-            Subject = "test subject lorem ipsum",
             Course = "test course lorem ipsum",
             Chapter = "test chapter lorem ipsum",
             DifficultyLevel = 1
@@ -210,7 +209,6 @@ public class QuestionRepositoryIntegrationTests
             Hint = "test",
             CorrectAnswers = new List<string>() { "test1", "test2" },
             WrongAnswers = new List<string>() { "test3", "test4" },
-            Subject = "subject",
             Course = "course",
             Chapter = "Chapter 1",
             DifficultyLevel = 1

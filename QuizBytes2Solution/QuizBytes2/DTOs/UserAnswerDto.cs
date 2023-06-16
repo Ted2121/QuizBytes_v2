@@ -13,6 +13,6 @@ public class UserAnswerDto
         ErrorMessage = "The Id field must be a valid GUID format.")]
     public string QuestionId { get; set; }
     [Required]
-    [StringLengthList(5, 100)]
+    [StringLengthCollection(5, 100)]
     public List<string> SelectedOptions { get; set; }
 }

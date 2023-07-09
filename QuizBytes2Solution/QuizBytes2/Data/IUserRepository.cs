@@ -16,4 +16,6 @@ public interface IUserRepository
     Task<bool> UpdatePasswordAsync(string username, string oldPassword, string newPassword);
     Task<bool> UpdateUserLastQuizResultAsync(User user, LastQuizResult lastQuizResult);
     Task<LastQuizResult> GetLastQuizByUserIdAsync(string id);
+    Task<bool> UpdateUserWithCourseProgressionAsync(string id, string course, string chapter);
+    Task<CourseProgression> GetUserProgressionByCourseNameAsync(string id, string course);
 }

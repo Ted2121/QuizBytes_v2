@@ -1,10 +1,9 @@
-﻿using Microsoft.Azure.Cosmos;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QuizBytes2.Encryption;
 using QuizBytes2.Exceptions;
 using QuizBytes2.Models;
 using System.Linq.Expressions;
-using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using User = QuizBytes2.Models.User;
 
 namespace QuizBytes2.Data;
@@ -64,7 +63,6 @@ public class UserRepository : IUserRepository
             throw new Exception($"User with id: {user.Id} could not be created. Exception was {ex.Message}");
         }
     }
-
 
     public async Task<bool> DeleteUserAsync(string id)
     {
@@ -326,6 +324,90 @@ public class UserRepository : IUserRepository
         }
     }
 
+    public async Task<bool> UpdateUserWithCourseProgressionAsync(string id, string course, string chapter)
+    {
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
+
+        try
+        {
+            var userToUpdate = await _appDbContext.FindAsync<User>(id);
+
+
+            if (userToUpdate == null)
+            {
+                throw new UserNotFoundException($"User with id: {id} not found.");
+            }
+
+            if (userToUpdate.CourseProgressions == null || !userToUpdate.CourseProgressions.Any(cp => cp.CourseName.ToLower().Equals(course.ToLower())))
+            {
+                var newCourseProgression = new CourseProgression
+                {
+                    CourseName = course.ToLower(),
+                    Chapters = new List<string> { chapter }
+                };
+
+                userToUpdate.CourseProgressions ??= new List<CourseProgression>();
+                userToUpdate.CourseProgressions.Add(newCourseProgression);
+
+            }
+            else
+            {
+                var existingCourseProgression = userToUpdate.CourseProgressions
+                    .SingleOrDefault(cp => cp.CourseName.ToLower().Equals(course.ToLower()));
+
+                if (existingCourseProgression != null)
+                {
+                    existingCourseProgression.Chapters.Add(chapter);
+                }
+                else
+                {
+                    throw new Exception("Something went wrong");
+                }
+            }
+
+            return await SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed updating user with id: {id}. Exception was: {ex}");
+        }
+    }
+
+    public async Task<CourseProgression> GetUserProgressionByCourseNameAsync(string id, string course)
+    {
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
+
+        try
+        {
+            var user = await _appDbContext.FindAsync<User>(id);
+
+
+            if (user == null)
+            {
+                throw new UserNotFoundException($"User with id: {id} not found.");
+            }
+
+            if (user.CourseProgressions == null)
+            {
+                return null;
+            }
+
+            var courseProgression = user.CourseProgressions.SingleOrDefault(cp => cp.CourseName.ToLower().Equals(course.ToLower()));
+
+            return courseProgression;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed getting course progression for user with id: {id}. Exception was: {ex}");
+        }
+    }
+
     private async Task<bool> SaveChangesAsync()
     {
         return await _appDbContext.SaveChangesAsync() >= 0;
@@ -365,4 +447,6 @@ public class UserRepository : IUserRepository
             return await SaveChangesWithConcurrencyControlAsync(currentETag, retryCount + 1);
         }
     }
+
+
 }

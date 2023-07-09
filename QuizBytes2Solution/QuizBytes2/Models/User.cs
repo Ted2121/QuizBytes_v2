@@ -27,4 +27,6 @@ public class User
     public LastQuizResult? LastQuizResult { get; set; }
     [ConcurrencyCheck]
     public string ETag { get; set; }
+
+    public List<CourseProgression>? CourseProgressions { get; set; }
 }

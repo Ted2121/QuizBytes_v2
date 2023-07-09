@@ -7,6 +7,7 @@ public class UserRepositoryIntegrationTests
 {
     private User _user;
     private LastQuizResult _lastQuizResult;
+    //private CourseProgression _courseProgression;
     private IUserRepository _userRepository;
     private AppDbContext _appDbContext;
 
@@ -202,6 +203,34 @@ public class UserRepositoryIntegrationTests
         Assert.That(isUpdated, Is.True);
     }
 
+    [Test]
+    public async Task ShouldReturnTrueWhenUpdatingUserWithCourseProgression()
+    {
+        // Arrange
+        await _userRepository.CreateUserAsync(_user);
+
+        // Act
+        var isUpdated = await _userRepository.UpdateUserWithCourseProgressionAsync(_user.Id, "Test", "TestChapter");
+
+
+        // Assert
+        Assert.That(isUpdated, Is.True);
+    }
+
+    [Test]
+    public async Task ShouldReturnProgressionWhenGettingByCourseName()
+    {
+        // Arrange
+        await _userRepository.CreateUserAsync(_user);
+        await _userRepository.UpdateUserWithCourseProgressionAsync(_user.Id, "Test", "TestChapter");
+
+        // Act
+        var progression = await _userRepository.GetUserProgressionByCourseNameAsync(_user.Id, "Test");
+
+        // Assert
+        Assert.That(progression, Is.Not.Null);
+    }
+
     private static bool CheckForSkipTearDown()
     {
         var categories = TestContext.CurrentContext.Test?.Properties["Category"];
@@ -243,6 +272,15 @@ public class UserRepositoryIntegrationTests
             DifficultyLevel = 3
         };
     }
+
+    //private void InitializeCourseProgression()
+    //{
+    //    _courseProgression = new CourseProgression()
+    //    {
+    //        CourseName = "Test",
+    //        Chapters = new List<string> { "Chapter" }
+    //    };
+    //}
 
     private void InitializeRepository()
     {

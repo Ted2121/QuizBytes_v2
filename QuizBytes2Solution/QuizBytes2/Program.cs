@@ -25,10 +25,10 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         #region Auth
-        builder.Services.AddSingleton(FirebaseApp.Create());
+        //builder.Services.AddSingleton(FirebaseApp.Create());
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddScheme<AuthenticationSchemeOptions, FirebaseAuthenticationHandler>(JwtBearerDefaults.AuthenticationScheme, (o) => { });
+        //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //    .AddScheme<AuthenticationSchemeOptions, FirebaseAuthenticationHandler>(JwtBearerDefaults.AuthenticationScheme, (o) => { });
         #endregion
 
         #region Data DI

@@ -221,4 +221,74 @@ public class UserController : ControllerBase
             return NotFound("User could not be found");
         }
     }
+
+    [Route("progression/{course}")]
+    [HttpGet]
+    public async Task<ActionResult<CourseProgressionDto>> GetCourseProgressionByCourseNameAsync(string course)
+    {
+        // TODO get id from claim
+        var id = "";
+
+        if (String.IsNullOrEmpty(id))
+        {
+            return Forbid("Invalid user id in claim");
+        }
+
+        try
+        {
+            var courseProgression = await _userRepository.GetUserProgressionByCourseNameAsync(id, course);
+
+            if (courseProgression == null)
+            {
+                return Ok(new CourseProgressionDto()
+                {
+                    CourseName = course,
+                    Chapters = new List<string>()
+                });
+            }
+
+            return Ok(_mapper.Map<CourseProgressionDto>(courseProgression));
+        }
+        catch (UserNotFoundException)
+        {
+            return NotFound("User could not be found");
+        }
+    }
+
+    [Route("progression")]
+    [HttpPut]
+    public async Task<ActionResult> UpdateCourseProgressionForUserAsync(string courseName, string chapterName)
+    {
+        // TODO get id from claim
+        var id = "";
+
+        if (String.IsNullOrEmpty(id))
+        {
+            return Forbid("Invalid user id in claim");
+        }
+
+        if (courseName == null || chapterName == null)
+        {
+            return BadRequest();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            if (!await _userRepository.UpdateUserWithCourseProgressionAsync(id, courseName, chapterName))
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+        catch (UserNotFoundException)
+        {
+            return NotFound("User could not be found");
+        }
+    }
 }

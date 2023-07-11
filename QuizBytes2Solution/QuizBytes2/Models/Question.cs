@@ -22,10 +22,10 @@ public class Question
     [StringLengthCollection(5, 100)]
     public ICollection<string> WrongAnswers { get; set; } = new List<string>();
     [Required]
-    [StringLength(100, MinimumLength = 5)]
+    [StringLength(100, MinimumLength = 1)]
     public string? Course { get; set; }
     [Required]
-    [StringLength(100, MinimumLength = 5)]
+    [StringLength(100, MinimumLength = 1)]
     public string? Chapter { get; set; }
     [Required]
     [Range(1, 3, ErrorMessage = "difficulty level must be a positive number between 1 and 3.")]

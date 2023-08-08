@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizBytes2.Data;
 using QuizBytes2.DTOs;
@@ -7,6 +8,7 @@ using QuizBytes2.Service;
 
 namespace QuizBytes2.Controllers;
 [Route("api/v1/[controller]")]
+[Authorize]
 [ApiController]
 public class QuizController : ControllerBase
 {

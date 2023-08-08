@@ -1,12 +1,5 @@
-
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using QuizBytes2.Authentication;
 using QuizBytes2.Data;
 using QuizBytes2.Service;
 using QuizBytes2.Service.Extensions;
@@ -29,6 +22,21 @@ public class Program
 
         //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         //    .AddScheme<AuthenticationSchemeOptions, FirebaseAuthenticationHandler>(JwtBearerDefaults.AuthenticationScheme, (o) => { });
+        #endregion
+
+        #region CORS
+        var AllowSpecificOrigins = "_allowSpecificOrigins";
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: AllowSpecificOrigins,
+                              policy =>
+                              {
+                                  policy.WithOrigins("http://127.0.0.1:5173");
+                                  policy.WithHeaders("Content-Type", "Authorization", "Origin");
+                                  policy.AllowAnyMethod();
+                              });
+        });
         #endregion
 
         #region Data DI
@@ -88,8 +96,8 @@ public class Program
         #endregion
 
         app.UseHttpsRedirection();
-
-        //app.ConfigureExceptionHandler(app.Logger);
+        app.UseCors(AllowSpecificOrigins);
+        app.ConfigureExceptionHandler(app.Logger);
 
         app.UseAuthorization();
 

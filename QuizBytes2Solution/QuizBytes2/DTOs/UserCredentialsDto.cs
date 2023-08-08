@@ -12,8 +12,8 @@ public class UserCredentialsDto
     [StringLength(15, MinimumLength = 5)]
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$", ErrorMessage = "Password must contain at least 8 characters, including uppercase, lowercase, numeric, and special characters.")]
     public string Password { get; set; }
-    [Required]
+    //[Required]
     [StringLength(15, MinimumLength = 5)]
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$", ErrorMessage = "Password must contain at least 8 characters, including uppercase, lowercase, numeric, and special characters.")]
-    public string NewPassword { get; set; }
+    public string? NewPassword { get; set; }
 }
